@@ -1,13 +1,68 @@
-export type StatusWypalu = "przyjęte" | "zaplanowane" | "w piecu" | "do odbioru" | "rozliczone";
+export type StatusWypalu = "przyjęte" | "zaplanowane" | "w piecu" | "do odbioru" | "do wysyłki" | "rozliczone";
 export type TypWypalu = "ASAP" | "standard" | "zlecony";
+export type Dostawa = "odbiór" | "wysyłka";
 
-export const wypaly = [
-  { id: "W-1041", klient: "Marta Kowal", praca: "Kubek z uchem", glina: "Kamionka biała", szkliwo: "Celadon", typ: "standard" as TypWypalu, status: "do odbioru" as StatusWypalu, cena: 18, data: "2026-10-30" },
-  { id: "W-1042", klient: "Jan Wiśniewski", praca: "Misa 24 cm", glina: "Kamionka czerwona", szkliwo: "Tenmoku", typ: "ASAP" as TypWypalu, status: "w piecu" as StatusWypalu, cena: 42, data: "2026-11-02" },
-  { id: "W-1043", klient: "Ola Nowak", praca: "Zestaw 4 talerzy", glina: "Porcelana", szkliwo: "Przezroczyste", typ: "standard" as TypWypalu, status: "zaplanowane" as StatusWypalu, cena: 64, data: "2026-11-04" },
-  { id: "W-1044", klient: "Marta Kowal", praca: "Wazon", glina: "Kamionka biała", szkliwo: "Shino", typ: "zlecony" as TypWypalu, status: "przyjęte" as StatusWypalu, cena: 55, data: "2026-11-05" },
-  { id: "W-1045", klient: "Piotr Zieliński", praca: "Doniczka", glina: "Kamionka czerwona", szkliwo: "—", typ: "standard" as TypWypalu, status: "rozliczone" as StatusWypalu, cena: 20, data: "2026-10-27" },
-  { id: "W-1046", klient: "Kasia Mróz", praca: "Czarka do herbaty", glina: "Porcelana", szkliwo: "Celadon", typ: "ASAP" as TypWypalu, status: "przyjęte" as StatusWypalu, cena: 25, data: "2026-11-02" },
+/** Domyślny termin: 14 dni od zgłoszenia (można zmienić w dialogu). */
+export const DOMYSLNY_TERMIN_DNI = 14;
+export function terminDomyslny(odDaty = "2026-11-02") {
+  const d = new Date(odDaty);
+  d.setDate(d.getDate() + DOMYSLNY_TERMIN_DNI);
+  return d.toISOString().slice(0, 10);
+}
+
+export type Wypal = {
+  id: string;
+  klient: string;
+  /** Komu praca ma trafić, jeśli nie do klienta (zamówienie dla kogoś). */
+  odbiorca?: string;
+  praca: string;
+  glina: string;
+  szkliwo: string;
+  typ: TypWypalu;
+  status: StatusWypalu;
+  cena: number;
+  data: string;
+  termin: string;
+  dostawa: Dostawa;
+  /** Szacowane zużycie szkliwa w tym wypale (ml lub g wg typu szkliwa). */
+  zuzycieSzkliwa?: number;
+};
+
+export const wypaly: Wypal[] = [
+  { id: "W-1041", klient: "Marta Kowal", praca: "Kubek z uchem", glina: "Kamionka biała", szkliwo: "Celadon", typ: "standard", status: "do odbioru", cena: 18, data: "2026-10-30", termin: "2026-11-13", dostawa: "odbiór", zuzycieSzkliwa: 60 },
+  { id: "W-1042", klient: "Jan Wiśniewski", praca: "Misa 24 cm", glina: "Kamionka czerwona", szkliwo: "Tenmoku", typ: "ASAP", status: "w piecu", cena: 42, data: "2026-11-02", termin: "2026-11-05", dostawa: "odbiór", zuzycieSzkliwa: 120 },
+  { id: "W-1043", klient: "Ola Nowak", odbiorca: "Restauracja Zielnik", praca: "Zestaw 4 talerzy", glina: "Porcelana", szkliwo: "Przezroczyste", typ: "standard", status: "zaplanowane", cena: 64, data: "2026-11-04", termin: "2026-11-18", dostawa: "wysyłka", zuzycieSzkliwa: 200 },
+  { id: "W-1044", klient: "Marta Kowal", praca: "Wazon", glina: "Kamionka biała", szkliwo: "Shino", typ: "zlecony", status: "przyjęte", cena: 55, data: "2026-11-05", termin: "2026-11-19", dostawa: "odbiór", zuzycieSzkliwa: 90 },
+  { id: "W-1045", klient: "Piotr Zieliński", praca: "Doniczka", glina: "Kamionka czerwona", szkliwo: "—", typ: "standard", status: "rozliczone", cena: 20, data: "2026-10-27", termin: "2026-11-10", dostawa: "odbiór" },
+  { id: "W-1046", klient: "Kasia Mróz", odbiorca: "Prezent dla mamy", praca: "Czarka do herbaty", glina: "Porcelana", szkliwo: "Celadon", typ: "ASAP", status: "przyjęte", cena: 25, data: "2026-11-02", termin: "2026-11-05", dostawa: "wysyłka", zuzycieSzkliwa: 40 },
+  { id: "W-1040", klient: "Ola Nowak", praca: "Dzbanek", glina: "Kamionka biała", szkliwo: "Celadon", typ: "standard", status: "do wysyłki", cena: 38, data: "2026-10-25", termin: "2026-11-08", dostawa: "wysyłka", zuzycieSzkliwa: 110 },
+];
+
+export type KategoriaZadania = "sklep" | "klient" | "asap" | "wysylka";
+export const kategorieZadan: { id: KategoriaZadania; label: string; opis: string }[] = [
+  { id: "sklep", label: "Zamówienia w sklepie", opis: "Z outletu i sklepu pracowni" },
+  { id: "klient", label: "Zamówienia dla klientów", opis: "Prace zlecone, z odbiorcą i terminem" },
+  { id: "asap", label: "Wypały ASAP", opis: "Automatycznie z kolejki wypałów" },
+  { id: "wysylka", label: "Wysyłki / do odbioru", opis: "Po wypale: spakować, wydać, wysłać" },
+];
+
+export type Zadanie = {
+  id: string;
+  kategoria: KategoriaZadania;
+  tytul: string;
+  kto: string;
+  termin: string;
+  zrobione: boolean;
+  zrodlo?: string;
+};
+
+/** Zadania ręczne; wypały ASAP i prace do odbioru/wysyłki dochodzą automatycznie z kolejki wypałów. */
+export const zadaniaReczne: Zadanie[] = [
+  { id: "Z-1", kategoria: "sklep", tytul: "Outlet: Kubek celadon (Marta K.) — spakować i wysłać", kto: "Anna Lis, Kraków", termin: "2026-11-04", zrobione: false, zrodlo: "outlet" },
+  { id: "Z-2", kategoria: "sklep", tytul: "Outlet: Talerze porcelanowe (Ola N.) — potwierdzić płatność", kto: "Tomasz Bąk, Gdańsk", termin: "2026-11-06", zrobione: false, zrodlo: "outlet" },
+  { id: "Z-3", kategoria: "klient", tytul: "Zamówić 6 kubków firmowych z logo", kto: "Kawiarnia Pora", termin: "2026-11-20", zrobione: false },
+  { id: "Z-4", kategoria: "klient", tytul: "Wycena zestawu 12 misek", kto: "Restauracja Zielnik", termin: "2026-11-07", zrobione: false },
+  { id: "Z-5", kategoria: "wysylka", tytul: "Odebrać kartony i folię bąbelkową", kto: "pracownia", termin: "2026-11-03", zrobione: true },
 ];
 
 export const klienci = [
@@ -18,13 +73,40 @@ export const klienci = [
   { id: 5, imie: "Kasia Mróz", email: "kasia@example.com", abonament: "Pakiet 10h", waznosc: "2027-01-10", status: "aktywny", prace: 1, przychod: 25 },
 ];
 
-export const magazyn = [
-  { nazwa: "Celadon", stan: 2.4, jednostka: "kg", srednia: 1.8, ostrzezenie: false },
-  { nazwa: "Tenmoku", stan: 0.6, jednostka: "kg", srednia: 1.2, ostrzezenie: true },
-  { nazwa: "Shino", stan: 3.1, jednostka: "kg", srednia: 0.9, ostrzezenie: false },
-  { nazwa: "Przezroczyste", stan: 1.1, jednostka: "kg", srednia: 2.2, ostrzezenie: true },
-  { nazwa: "Kamionka biała", stan: 45, jednostka: "kg", srednia: 30, ostrzezenie: false },
-  { nazwa: "Porcelana", stan: 12, jednostka: "kg", srednia: 18, ostrzezenie: true },
+export type TypPozycji = "fluidowe" | "proszkowe" | "glina";
+export type Jednostka = "ml" | "g" | "kg";
+export type PozycjaMagazynu = {
+  nazwa: string;
+  typ: TypPozycji;
+  jednostka: Jednostka;
+  /** Stan z ostatniego przeglądu. */
+  stan: number;
+  /** Średnie miesięczne zużycie z przeglądów. */
+  srednia: number;
+  /** Kiedy ostatnio sprawdzono stan fizycznie. */
+  ostatniPrzeglad: string;
+  dataZamowienia?: string;
+};
+
+/** Co ile dni aplikacja prosi o przegląd magazynu. */
+export const CYKL_PRZEGLADU_DNI = 14;
+
+export const magazyn: PozycjaMagazynu[] = [
+  { nazwa: "Celadon", typ: "fluidowe", jednostka: "ml", stan: 2400, srednia: 1800, ostatniPrzeglad: "2026-10-18" },
+  { nazwa: "Tenmoku", typ: "fluidowe", jednostka: "ml", stan: 600, srednia: 1200, ostatniPrzeglad: "2026-10-18" },
+  { nazwa: "Shino", typ: "proszkowe", jednostka: "g", stan: 3100, srednia: 900, ostatniPrzeglad: "2026-10-18" },
+  { nazwa: "Przezroczyste", typ: "fluidowe", jednostka: "ml", stan: 1100, srednia: 2200, ostatniPrzeglad: "2026-10-18" },
+  { nazwa: "Kamionka biała", typ: "glina", jednostka: "kg", stan: 45, srednia: 30, ostatniPrzeglad: "2026-10-18", dataZamowienia: "2026-09-12" },
+  { nazwa: "Kamionka czerwona", typ: "glina", jednostka: "kg", stan: 20, srednia: 15, ostatniPrzeglad: "2026-10-18", dataZamowienia: "2026-08-02" },
+  { nazwa: "Porcelana", typ: "glina", jednostka: "kg", stan: 12, srednia: 18, ostatniPrzeglad: "2026-10-18", dataZamowienia: "2026-10-01" },
+];
+
+/** Historia przeglądów (ostatnie 3) — do statystyk. */
+export type Przeglad = { data: string; stany: Record<string, number> };
+export const przeglady: Przeglad[] = [
+  { data: "2026-09-06", stany: { Celadon: 4100, Tenmoku: 1900, Shino: 3900, Przezroczyste: 3300, "Kamionka biała": 70, "Kamionka czerwona": 35, Porcelana: 30 } },
+  { data: "2026-10-04", stany: { Celadon: 3200, Tenmoku: 1300, Shino: 3500, Przezroczyste: 2200, "Kamionka biała": 58, "Kamionka czerwona": 28, Porcelana: 21 } },
+  { data: "2026-10-18", stany: { Celadon: 2400, Tenmoku: 600, Shino: 3100, Przezroczyste: 1100, "Kamionka biała": 45, "Kamionka czerwona": 20, Porcelana: 12 } },
 ];
 
 export const biblioteka = [

@@ -1,11 +1,12 @@
 "use client";
 
-import { LayoutDashboard, Flame, Users, Package, Palette, BookOpen } from "lucide-react";
+import { LayoutDashboard, Flame, ClipboardList, Users, Package, Palette, BookOpen } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 
 const nav = [
   { href: "/pracownia", label: "Pulpit", icon: LayoutDashboard },
   { href: "/pracownia/wypaly", label: "Wypały", icon: Flame },
+  { href: "/pracownia/zadania", label: "Do zrobienia", icon: ClipboardList },
   { href: "/pracownia/klienci", label: "Abonenci", icon: Users },
   { href: "/pracownia/magazyn", label: "Magazyn", icon: Package },
   { href: "/pracownia/szkliwa", label: "Biblioteka szkliw", icon: Palette },

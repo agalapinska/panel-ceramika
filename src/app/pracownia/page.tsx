@@ -1,20 +1,22 @@
 import Link from "next/link";
-import { Flame, Users, TrendingUp, AlertTriangle, ArrowRight, MessageCircleQuestion } from "lucide-react";
+import { Flame, Users, TrendingUp, AlertTriangle, ArrowRight, MessageCircleQuestion, ClipboardList } from "lucide-react";
 import { PageHeader } from "@/components/app-shell";
 import { StatusBadge } from "@/components/status-badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { wypaly, klienci, magazyn, pytaniaOtwarte } from "@/lib/data";
+import { wypaly, klienci, magazyn, pytaniaOtwarte, zadaniaReczne } from "@/lib/data";
 
 export default function Pulpit() {
   const aktywne = wypaly.filter((w) => w.status !== "rozliczone");
   const doOdbioru = wypaly.filter((w) => w.status === "do odbioru").length;
   const przychod = klienci.reduce((s, k) => s + k.przychod, 0);
-  const ostrzezenia = magazyn.filter((m) => m.ostrzezenie);
+  const ostrzezenia = magazyn.filter((m) => m.stan / m.srednia < 0.75);
+  const doZrobienia = zadaniaReczne.filter((z) => !z.zrobione).length + wypaly.filter((w) => w.typ === "ASAP" && w.status !== "rozliczone").length + wypaly.filter((w) => w.status === "do odbioru" || w.status === "do wysyłki").length;
 
   const kpi = [
     { label: "Wypały w toku", value: aktywne.length, hint: `${doOdbioru} do odbioru`, icon: Flame },
+    { label: "Do zrobienia", value: doZrobienia, hint: "zamówienia, ASAP, wysyłki", icon: ClipboardList },
     { label: "Aktywni abonenci", value: klienci.filter((k) => k.status === "aktywny").length, hint: `${klienci.filter((k) => k.status === "wygasa").length} wygasa wkrótce`, icon: Users },
     { label: "Przychód z wypałów (msc)", value: `${przychod} zł`, hint: "+12% vs. październik", icon: TrendingUp },
     { label: "Ostrzeżenia magazynowe", value: ostrzezenia.length, hint: ostrzezenia.map((o) => o.nazwa).join(", "), icon: AlertTriangle },
@@ -23,7 +25,7 @@ export default function Pulpit() {
   return (
     <>
       <PageHeader title="Dzień dobry, Glina & Ogień" description="Niedziela, 2 listopada 2026 — co się dzieje w pracowni." />
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         {kpi.map((k) => (
           <Card key={k.label}>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
