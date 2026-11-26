@@ -25,11 +25,17 @@ const kolory: Record<string, string> = {
   "na biskwit": "bg-orange-100 text-orange-800",
   "do szkliwienia": "bg-violet-100 text-violet-800",
   "gotowe": "bg-emerald-100 text-emerald-800",
+  "przed 1 wypałem": "bg-muted text-muted-foreground",
+  "1 wypał in progress": "bg-orange-100 text-orange-800",
+  "biskwit odebrany": "bg-violet-100 text-violet-800",
+  "2 wypał in progress": "bg-orange-100 text-orange-800",
+  "opłacone": "bg-emerald-100 text-emerald-800",
+  "do zapłaty": "bg-amber-100 text-amber-800",
   "ASAP": "bg-red-100 text-red-800",
   "standard": "bg-muted text-muted-foreground",
   "zlecony": "bg-violet-100 text-violet-800",
 };
 
-export function StatusBadge({ value, className }: { value: string; className?: string }) {
-  return <Badge className={cn("border-transparent", kolory[value] ?? "bg-muted", className)}>{value}</Badge>;
+export function StatusBadge({ value, className, children }: { value: string; className?: string; children?: React.ReactNode }) {
+  return <Badge className={cn("border-transparent", kolory[value] ?? "bg-muted", className)}>{children ?? value}</Badge>;
 }

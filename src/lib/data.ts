@@ -20,6 +20,9 @@ export type Wypal = {
   szkliwo: string;
   typ: TypWypalu;
   status: StatusWypalu;
+  /** Waga pracy na wadze przy zgłoszeniu — podstawa rozliczenia. */
+  kg: number;
+  etap: 1 | 2;
   cena: number;
   data: string;
   termin: string;
@@ -29,13 +32,13 @@ export type Wypal = {
 };
 
 export const wypaly: Wypal[] = [
-  { id: "W-1041", klient: "Marta Kowal", praca: "Kubek z uchem", glina: "Kamionka biała", szkliwo: "Celadon", typ: "standard", status: "do odbioru", cena: 18, data: "2026-10-30", termin: "2026-11-13", dostawa: "odbiór", zuzycieSzkliwa: 60 },
-  { id: "W-1042", klient: "Jan Wiśniewski", praca: "Misa 24 cm", glina: "Kamionka czerwona", szkliwo: "Tenmoku", typ: "ASAP", status: "w piecu", cena: 42, data: "2026-11-02", termin: "2026-11-05", dostawa: "odbiór", zuzycieSzkliwa: 120 },
-  { id: "W-1043", klient: "Ola Nowak", odbiorca: "Restauracja Zielnik", praca: "Zestaw 4 talerzy", glina: "Porcelana", szkliwo: "Przezroczyste", typ: "standard", status: "zaplanowane", cena: 64, data: "2026-11-04", termin: "2026-11-18", dostawa: "wysyłka", zuzycieSzkliwa: 200 },
-  { id: "W-1044", klient: "Marta Kowal", praca: "Wazon", glina: "Kamionka biała", szkliwo: "Shino", typ: "zlecony", status: "przyjęte", cena: 55, data: "2026-11-05", termin: "2026-11-19", dostawa: "odbiór", zuzycieSzkliwa: 90 },
-  { id: "W-1045", klient: "Piotr Zieliński", praca: "Doniczka", glina: "Kamionka czerwona", szkliwo: "—", typ: "standard", status: "rozliczone", cena: 20, data: "2026-10-27", termin: "2026-11-10", dostawa: "odbiór" },
-  { id: "W-1046", klient: "Kasia Mróz", odbiorca: "Prezent dla mamy", praca: "Czarka do herbaty", glina: "Porcelana", szkliwo: "Celadon", typ: "ASAP", status: "przyjęte", cena: 25, data: "2026-11-02", termin: "2026-11-05", dostawa: "wysyłka", zuzycieSzkliwa: 40 },
-  { id: "W-1040", klient: "Ola Nowak", praca: "Dzbanek", glina: "Kamionka biała", szkliwo: "Celadon", typ: "standard", status: "do wysyłki", cena: 38, data: "2026-10-25", termin: "2026-11-08", dostawa: "wysyłka", zuzycieSzkliwa: 110 },
+  { id: "W-1041", klient: "Marta Kowal", praca: "Kubek z uchem", glina: "Kamionka biała", szkliwo: "Celadon", typ: "standard", status: "do odbioru", kg: 0.55, etap: 2, cena: 18, data: "2026-10-30", termin: "2026-11-13", dostawa: "odbiór", zuzycieSzkliwa: 60 },
+  { id: "W-1042", klient: "Jan Wiśniewski", praca: "Misa 24 cm", glina: "Kamionka czerwona", szkliwo: "Tenmoku", typ: "ASAP", status: "w piecu", kg: 1.0, etap: 2, cena: 42, data: "2026-11-02", termin: "2026-11-05", dostawa: "odbiór", zuzycieSzkliwa: 120 },
+  { id: "W-1043", klient: "Ola Nowak", odbiorca: "Restauracja Zielnik", praca: "Zestaw 4 talerzy", glina: "Porcelana", szkliwo: "Przezroczyste", typ: "standard", status: "zaplanowane", kg: 1.6, etap: 2, cena: 64, data: "2026-11-04", termin: "2026-11-18", dostawa: "wysyłka", zuzycieSzkliwa: 200 },
+  { id: "W-1044", klient: "Marta Kowal", praca: "Wazon", glina: "Kamionka biała", szkliwo: "Shino", typ: "zlecony", status: "przyjęte", kg: 2.5, etap: 1, cena: 55, data: "2026-11-05", termin: "2026-11-19", dostawa: "odbiór", zuzycieSzkliwa: 90 },
+  { id: "W-1045", klient: "Piotr Zieliński", praca: "Doniczka", glina: "Kamionka czerwona", szkliwo: "—", typ: "standard", status: "rozliczone", kg: 0.6, etap: 1, cena: 20, data: "2026-10-27", termin: "2026-11-10", dostawa: "odbiór" },
+  { id: "W-1046", klient: "Kasia Mróz", odbiorca: "Prezent dla mamy", praca: "Czarka do herbaty", glina: "Porcelana", szkliwo: "Celadon", typ: "ASAP", status: "przyjęte", kg: 0.4, etap: 2, cena: 25, data: "2026-11-02", termin: "2026-11-05", dostawa: "wysyłka", zuzycieSzkliwa: 40 },
+  { id: "W-1040", klient: "Ola Nowak", praca: "Dzbanek", glina: "Kamionka biała", szkliwo: "Celadon", typ: "standard", status: "do wysyłki", kg: 0.9, etap: 2, cena: 38, data: "2026-10-25", termin: "2026-11-08", dostawa: "wysyłka", zuzycieSzkliwa: 110 },
 ];
 
 export type KategoriaZadania = "sklep" | "klient" | "asap" | "wysylka";
@@ -66,11 +69,11 @@ export const zadaniaReczne: Zadanie[] = [
 ];
 
 export const klienci = [
-  { id: 1, imie: "Marta Kowal", email: "marta@example.com", abonament: "Open studio", waznosc: "2026-11-30", status: "aktywny", prace: 3, przychod: 215 },
-  { id: 2, imie: "Jan Wiśniewski", email: "jan.w@example.com", abonament: "Pakiet 10h", waznosc: "2026-12-15", status: "aktywny", prace: 2, przychod: 164 },
-  { id: 3, imie: "Ola Nowak", email: "ola@example.com", abonament: "Open studio", waznosc: "2026-11-05", status: "wygasa", prace: 4, przychod: 318 },
-  { id: 4, imie: "Piotr Zieliński", email: "piotr.z@example.com", abonament: "Jednorazowo", waznosc: "—", status: "nieaktywny", prace: 1, przychod: 20 },
-  { id: 5, imie: "Kasia Mróz", email: "kasia@example.com", abonament: "Pakiet 10h", waznosc: "2027-01-10", status: "aktywny", prace: 1, przychod: 25 },
+  { id: 1, imie: "Marta Kowal", email: "marta@example.com", abonament: "Open studio", waznosc: "2026-11-30", status: "aktywny", prace: 3, przychod: 215, doZaplaty: 128.8 },
+  { id: 2, imie: "Jan Wiśniewski", email: "jan.w@example.com", abonament: "Pakiet 10h", waznosc: "2026-12-15", status: "aktywny", prace: 2, przychod: 164, doZaplaty: 63 },
+  { id: 3, imie: "Ola Nowak", email: "ola@example.com", abonament: "Open studio", waznosc: "2026-11-05", status: "wygasa", prace: 4, przychod: 318, doZaplaty: 0 },
+  { id: 4, imie: "Piotr Zieliński", email: "piotr.z@example.com", abonament: "Jednorazowo", waznosc: "—", status: "nieaktywny", prace: 1, przychod: 20, doZaplaty: 0 },
+  { id: 5, imie: "Kasia Mróz", email: "kasia@example.com", abonament: "Pakiet 10h", waznosc: "2027-01-10", status: "aktywny", prace: 1, przychod: 25, doZaplaty: 37.5 },
 ];
 
 export type TypPozycji = "fluidowe" | "proszkowe" | "glina";
@@ -131,11 +134,93 @@ export const pytaniaOtwarte = [
   { autor: "Jan Wiśniewski", tresc: "Gdzie są gąbki do retuszu?", data: "wczoraj" },
 ];
 
-export const mojePrace = [
-  { id: 1, tytul: "Kubek z uchem", status: "do szkliwienia", etap: "Biskwit gotowy, odebrany z półki B3.", zadania: ["Przeszlifować stopkę", "Nałożyć celadon 2 warstwy", "Zgłosić do wypału"], data: "30 paź" },
-  { id: 2, tytul: "Wazon", status: "schnie", etap: "Doklejona szyjka, pod folią na półce A1.", zadania: ["Sprawdzić czy równo schnie", "Retusz łączenia"], data: "1 lis" },
-  { id: 3, tytul: "Miseczka", status: "gotowe", etap: "Po wypale szkliwnym. Odebrana.", zadania: [], data: "20 paź" },
+/** Cennik pracowni — rozliczenie za kilogram, nie za sztukę. */
+export type Cennik = {
+  glinaKg: number;
+  biskwitKg: number;
+  szkliwnyKg: number;
+  asapProcent: number;
+  /** Szkliwa pracowni: cena za porcję (ml dla fluidowych, g dla proszkowych). */
+  szkliwa: { nazwa: string; typ: "fluidowe" | "proszkowe"; porcja: number; jednostka: "ml" | "g"; cena: number }[];
+  /** Po ilu dniach od 100% praca na półce zaczyna „leżeć za długo”. */
+  limitPolkiDni: number;
+};
+
+export const cennik: Cennik = {
+  glinaKg: 18,
+  biskwitKg: 30,
+  szkliwnyKg: 40,
+  asapProcent: 50,
+  szkliwa: [
+    { nazwa: "Celadon", typ: "fluidowe", porcja: 50, jednostka: "ml", cena: 8 },
+    { nazwa: "Tenmoku", typ: "fluidowe", porcja: 50, jednostka: "ml", cena: 9 },
+    { nazwa: "Przezroczyste", typ: "fluidowe", porcja: 50, jednostka: "ml", cena: 6 },
+    { nazwa: "Shino", typ: "proszkowe", porcja: 50, jednostka: "g", cena: 7 },
+    { nazwa: "Amaco Potter's Choice", typ: "fluidowe", porcja: 50, jednostka: "ml", cena: 12 },
+  ],
+  limitPolkiDni: 30,
+};
+
+/** Progres wypału w czasie: standard 7 dni 80%, 10 dni 90%, 14 dni 100%; ASAP 3/4/5 dni. */
+export function progresWypalu(dataOddania: string, asap: boolean, dzis = "2026-11-02") {
+  const dni = Math.round((new Date(dzis).getTime() - new Date(dataOddania).getTime()) / 86400000);
+  const [d80, d90, d100] = asap ? [3, 4, 5] : [7, 10, 14];
+  if (dni >= d100) return { procent: 100, dni, naPolce: dni - d100 };
+  if (dni >= d90) return { procent: 90, dni, naPolce: 0 };
+  if (dni >= d80) return { procent: 80, dni, naPolce: 0 };
+  return { procent: Math.max(5, Math.round((dni / d80) * 70)), dni, naPolce: 0 };
+}
+
+export type StatusPracy = "przed 1 wypałem" | "1 wypał in progress" | "biskwit odebrany" | "2 wypał in progress" | "gotowe";
+export type Wypal1 = { data: string; kg: number; cienka: boolean; asap: boolean; tylko1: boolean };
+export type Wypal2 = { data: string; kg: number; asap: boolean; szkliwa: string[]; wlasneSzkliwa: boolean };
+export type Praca = {
+  id: number;
+  tytul: string;
+  co: string;
+  metoda: string;
+  status: StatusPracy;
+  utworzono: string;
+  glinaKg: number;
+  wypal1?: Wypal1;
+  wypal2?: Wypal2;
+  notatka: string;
+  tagi: string[];
+  zadania: string[];
+};
+
+export const mojePrace: Praca[] = [
+  { id: 1, tytul: "Kubek z uchem", co: "kubek", metoda: "lepienie", status: "biskwit odebrany", utworzono: "2026-10-12", glinaKg: 0.8, wypal1: { data: "2026-10-18", kg: 0.55, cienka: true, asap: false, tylko1: false }, notatka: "Biskwit gotowy, odebrany z półki B3.", tagi: ["kubek", "lepienie"], zadania: ["Przeszlifować stopkę", "Nałożyć celadon 2 warstwy", "Zgłosić do 2. wypału"] },
+  { id: 2, tytul: "Wazon", co: "wazon", metoda: "wałki", status: "przed 1 wypałem", utworzono: "2026-11-01", glinaKg: 2.5, notatka: "Doklejona szyjka, pod folią na półce A1.", tagi: ["wazon", "wałki"], zadania: ["Sprawdzić czy równo schnie", "Retusz łączenia"] },
+  { id: 3, tytul: "Misa 24 cm", co: "misa", metoda: "toczenie", status: "2 wypał in progress", utworzono: "2026-10-05", glinaKg: 1.6, wypal1: { data: "2026-10-10", kg: 1.1, cienka: false, asap: false, tylko1: false }, wypal2: { data: "2026-10-28", kg: 1.0, asap: true, szkliwa: ["Tenmoku"], wlasneSzkliwa: false }, notatka: "ASAP na prezent.", tagi: ["misa", "toczenie"], zadania: [] },
+  { id: 4, tytul: "Miseczka", co: "miseczka", metoda: "lepienie", status: "gotowe", utworzono: "2026-09-20", glinaKg: 0.5, wypal1: { data: "2026-09-28", kg: 0.35, cienka: true, asap: false, tylko1: false }, wypal2: { data: "2026-10-06", kg: 0.32, asap: false, szkliwa: ["Celadon"], wlasneSzkliwa: false }, notatka: "Po wypale szkliwnym. Odebrana.", tagi: ["miseczka", "lepienie"], zadania: [] },
 ];
+
+export type PozycjaRachunku = { id: string; pracaId: number; praca: string; data: string; opis: string; ilosc: string; kwota: number; oplacone: boolean };
+
+/** Rachunek członka wyliczany z prac: glina, 1. wypał (biskwit), 2. wypał (szkliwny) + szkliwa pracowni, dopłata ASAP. */
+export function rachunekZPrac(prace: Praca[], c: Cennik, oplacone: Set<string> = new Set(["G-4", "W1-4", "W2-4", "S-4-Celadon"])): PozycjaRachunku[] {
+  const r: PozycjaRachunku[] = [];
+  const asapMnoznik = 1 + c.asapProcent / 100;
+  for (const p of prace) {
+    r.push({ id: `G-${p.id}`, pracaId: p.id, praca: p.tytul, data: p.utworzono, opis: "Glina z pracowni", ilosc: `${p.glinaKg} kg × ${c.glinaKg} zł`, kwota: +(p.glinaKg * c.glinaKg).toFixed(2), oplacone: oplacone.has(`G-${p.id}`) });
+    if (p.wypal1) {
+      const m = p.wypal1.asap ? asapMnoznik : 1;
+      r.push({ id: `W1-${p.id}`, pracaId: p.id, praca: p.tytul, data: p.wypal1.data, opis: `1. wypał (biskwit)${p.wypal1.asap ? " ASAP" : ""}`, ilosc: `${p.wypal1.kg} kg × ${c.biskwitKg} zł${p.wypal1.asap ? ` × ${asapMnoznik}` : ""}`, kwota: +(p.wypal1.kg * c.biskwitKg * m).toFixed(2), oplacone: oplacone.has(`W1-${p.id}`) });
+    }
+    if (p.wypal2) {
+      const m = p.wypal2.asap ? asapMnoznik : 1;
+      r.push({ id: `W2-${p.id}`, pracaId: p.id, praca: p.tytul, data: p.wypal2.data, opis: `2. wypał (szkliwny)${p.wypal2.asap ? " ASAP" : ""}`, ilosc: `${p.wypal2.kg} kg × ${c.szkliwnyKg} zł${p.wypal2.asap ? ` × ${asapMnoznik}` : ""}`, kwota: +(p.wypal2.kg * c.szkliwnyKg * m).toFixed(2), oplacone: oplacone.has(`W2-${p.id}`) });
+      if (!p.wypal2.wlasneSzkliwa) {
+        for (const nazwa of p.wypal2.szkliwa) {
+          const sz = c.szkliwa.find((x) => x.nazwa === nazwa);
+          if (sz) r.push({ id: `S-${p.id}-${nazwa}`, pracaId: p.id, praca: p.tytul, data: p.wypal2.data, opis: `Szkliwo pracowni: ${nazwa}`, ilosc: `1 porcja (${sz.porcja} ${sz.jednostka})`, kwota: sz.cena, oplacone: oplacone.has(`S-${p.id}-${nazwa}`) });
+        }
+      }
+    }
+  }
+  return r.sort((a, b) => b.data.localeCompare(a.data));
+}
 
 export const kursy = [
   { id: 1, tytul: "Zrób kubek", lekcje: 6, ukonczone: 4, punkty: 120, opis: "Od kulki gliny do kubka z uchem gotowego do wypału." },
@@ -152,9 +237,12 @@ export const odznaki = [
 ];
 
 export const warsztaty = [
-  { id: 1, tytul: "Toczenie dla początkujących", data: "Sob 8 lis, 10:00", miejsca: 3, cena: 180 },
-  { id: 2, tytul: "Szkliwienie: efekty i błędy", data: "Nd 16 lis, 12:00", miejsca: 0, cena: 150 },
-  { id: 3, tytul: "Lepienie z wałków: wazon", data: "Sob 22 lis, 10:00", miejsca: 6, cena: 160 },
+  { id: 1, tytul: "Kurs garncarstwa (2 godz.)", data: "Sob 8 lis, 10:00", miejsca: 3, cena: 249, opis: "Toczenie na kole od zera, jedna praca do wypału w cenie." },
+  { id: 2, tytul: "Malowanie ceramiki", data: "Nd 16 lis, 12:00", miejsca: 0, cena: 99, opis: "Biskwit, angoby i szkliwa pracowni, bez doświadczenia." },
+  { id: 3, tytul: "1-miesięczne toczenie (4 × 2 godz.)", data: "Od wt 18 lis, 18:00", miejsca: 4, cena: 679, opis: "Cztery spotkania co tydzień, materiały i wypały w cenie." },
+  { id: 4, tytul: "Intensywny kurs garncarstwa (3 dni)", data: "Pt–nd 28–30 lis", miejsca: 2, cena: 1249, opis: "Trzy pełne dni: toczenie, toczenie, szkliwienie." },
+  { id: 5, tytul: "Cotygodniowe zajęcia ceramiczne", data: "Czw 19:00, miesiąc", miejsca: 6, cena: 399, opis: "Dorośli i młodzież, stałe miejsce w grupie." },
+  { id: 6, tytul: "Urodzinki dla dzieci", data: "Termin do ustalenia", miejsca: 9, cena: 200, opis: "Od 200 zł, grupa do 8 dzieci, lepienie i malowanie." },
 ];
 
 export const wiki = [

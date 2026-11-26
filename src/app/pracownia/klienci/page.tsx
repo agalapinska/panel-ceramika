@@ -30,6 +30,7 @@ export default function Klienci() {
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Prace</TableHead>
                 <TableHead className="text-right">Przychód</TableHead>
+                <TableHead className="text-right">Do zapłaty</TableHead>
                 <TableHead />
               </TableRow>
             </TableHeader>
@@ -50,6 +51,7 @@ export default function Klienci() {
                   <TableCell><StatusBadge value={k.status} /></TableCell>
                   <TableCell className="text-right">{k.prace}</TableCell>
                   <TableCell className="text-right font-medium">{k.przychod} zł</TableCell>
+                  <TableCell className="text-right">{k.doZaplaty > 0 ? <StatusBadge value="do zapłaty" className="font-mono">{k.doZaplaty.toFixed(2).replace(".", ",")} zł</StatusBadge> : <span className="text-muted-foreground">—</span>}</TableCell>
                   <TableCell className="text-right"><Button size="icon" variant="ghost" aria-label="Napisz"><Mail className="size-4" /></Button></TableCell>
                 </TableRow>
               ))}

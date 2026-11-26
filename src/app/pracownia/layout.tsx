@@ -1,6 +1,6 @@
 "use client";
 
-import { LayoutDashboard, Flame, ClipboardList, Users, Package, Palette, BookOpen } from "lucide-react";
+import { LayoutDashboard, Flame, ClipboardList, Users, Package, Palette, BookOpen, BadgeDollarSign } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 
 const nav = [
@@ -11,6 +11,7 @@ const nav = [
   { href: "/pracownia/magazyn", label: "Magazyn", icon: Package },
   { href: "/pracownia/szkliwa", label: "Biblioteka szkliw", icon: Palette },
   { href: "/pracownia/tresci", label: "Treści pracowni", icon: BookOpen },
+  { href: "/pracownia/cennik", label: "Cennik", icon: BadgeDollarSign },
 ];
 
 export default function Layout({ children }: { children: React.ReactNode }) {

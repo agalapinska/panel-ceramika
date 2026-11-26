@@ -12,7 +12,13 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { wypaly as dane, klienci, terminDomyslny, DOMYSLNY_TERMIN_DNI, type Wypal, type StatusWypalu, type TypWypalu, type Dostawa } from "@/lib/data";
+import { wypaly as dane, klienci, cennik, terminDomyslny, DOMYSLNY_TERMIN_DNI, type Wypal, type StatusWypalu, type TypWypalu, type Dostawa } from "@/lib/data";
+
+function cenaWypalu(w: Wypal) {
+  if (w.typ === "zlecony") return w.cena;
+  const stawka = w.etap === 1 ? cennik.biskwitKg : cennik.szkliwnyKg;
+  return +(w.kg * stawka * (w.typ === "ASAP" ? 1 + cennik.asapProcent / 100 : 1)).toFixed(2);
+}
 
 const DZIS = "2026-11-02";
 
@@ -40,7 +46,7 @@ function poTerminie(t: string) {
   return t < DZIS;
 }
 
-const pustyForm = { klient: "", odbiorca: "", praca: "", glina: "Kamionka biała", szkliwo: "", typ: "standard" as TypWypalu, cena: "20", termin: terminDomyslny(DZIS), dostawa: "odbiór" as Dostawa };
+const pustyForm = { klient: "", odbiorca: "", praca: "", glina: "Kamionka biała", szkliwo: "", typ: "standard" as TypWypalu, kg: "0.5", etap: "1", cena: "20", termin: terminDomyslny(DZIS), dostawa: "odbiór" as Dostawa };
 
 export default function Wypaly() {
   const [wypaly, setWypaly] = useState<Wypal[]>(dane);
@@ -54,7 +60,7 @@ export default function Wypaly() {
   function dodaj() {
     if (!form.klient || !form.praca) return;
     setWypaly((w) => [
-      { id: `W-${1047 + w.length - dane.length}`, ...form, odbiorca: form.odbiorca || undefined, cena: Number(form.cena), status: "przyjęte", data: DZIS },
+      { id: `W-${1047 + w.length - dane.length}`, ...form, odbiorca: form.odbiorca || undefined, kg: Number(form.kg), etap: Number(form.etap) as 1 | 2, cena: Number(form.cena), status: "przyjęte", data: DZIS },
       ...w,
     ]);
     setOpen(false);
@@ -72,6 +78,7 @@ export default function Wypaly() {
               <TableHead>Praca</TableHead>
               <TableHead className="hidden lg:table-cell">Glina / szkliwo</TableHead>
               <TableHead>Typ</TableHead>
+              <TableHead className="text-right">kg</TableHead>
               <TableHead>Termin</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Cena</TableHead>
@@ -94,9 +101,10 @@ export default function Wypaly() {
                 </TableCell>
                 <TableCell className="hidden text-muted-foreground lg:table-cell">{w.glina} · {w.szkliwo}</TableCell>
                 <TableCell><StatusBadge value={w.typ} /></TableCell>
+                <TableCell className="text-right text-muted-foreground">{w.kg} <span className="text-xs">({w.etap}.)</span></TableCell>
                 <TableCell className={poTerminie(w.termin) && w.status !== "rozliczone" ? "font-medium text-red-700" : ""}>{formatTermin(w.termin)}</TableCell>
                 <TableCell><StatusBadge value={w.status} /></TableCell>
-                <TableCell className="text-right">{w.cena} zł</TableCell>
+                <TableCell className="text-right">{cenaWypalu(w).toFixed(2).replace(".", ",")} zł</TableCell>
                 <TableCell className="text-right">
                   {w.status !== "rozliczone" && (
                     <Button size="sm" variant="ghost" onClick={() => dalej(w.id)}>{etykietaAkcji(w)}</Button>
@@ -105,7 +113,7 @@ export default function Wypaly() {
               </TableRow>
             ))}
             {rows.length === 0 && (
-              <TableRow><TableCell colSpan={9} className="py-8 text-center text-muted-foreground">Brak wypałów</TableCell></TableRow>
+              <TableRow><TableCell colSpan={10} className="py-8 text-center text-muted-foreground">Brak wypałów</TableCell></TableRow>
             )}
           </TableBody>
         </Table>
@@ -119,7 +127,7 @@ export default function Wypaly() {
     <>
       <PageHeader
         title="Wypały"
-        description="Zgłoszenia, kolejka ze statusami i rozliczenia. Termin domyślnie za 14 dni."
+        description="Zgłoszenia, kolejka ze statusami i rozliczenia za kilogram. Termin domyślnie za 14 dni."
         action={
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger render={<Button />}><Plus className="size-4" /> Zgłoś wypał</DialogTrigger>
@@ -180,9 +188,19 @@ export default function Wypaly() {
                     <Input id="termin" type="date" value={form.termin} onChange={(e) => setForm({ ...form, termin: e.target.value })} />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="cena">Stawka (zł)</Label>
-                    <Input id="cena" type="number" value={form.cena} onChange={(e) => setForm({ ...form, cena: e.target.value })} />
+                    <Label htmlFor="kg">Waga (kg)</Label>
+                    <Input id="kg" type="number" step="0.05" value={form.kg} onChange={(e) => setForm({ ...form, kg: e.target.value })} />
                   </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label>Etap</Label>
+                    <Select value={form.etap} onValueChange={(v) => setForm({ ...form, etap: v ?? "1" })}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent><SelectItem value="1">1. wypał — biskwit ({cennik.biskwitKg} zł/kg)</SelectItem><SelectItem value="2">2. wypał — szkliwny ({cennik.szkliwnyKg} zł/kg)</SelectItem></SelectContent>
+                    </Select>
+                  </div>
+                  {form.typ === "zlecony" && <div className="grid gap-2"><Label htmlFor="cena">Cena zlecenia (zł)</Label><Input id="cena" type="number" value={form.cena} onChange={(e) => setForm({ ...form, cena: e.target.value })} /></div>}
                 </div>
                 <div className="grid gap-2">
                   <Label>Odbiór</Label>

@@ -1,10 +1,11 @@
 "use client";
 
-import { Hammer, GraduationCap, CalendarDays, BookOpen, Sparkles, Images } from "lucide-react";
+import { Hammer, Receipt, GraduationCap, CalendarDays, BookOpen, Sparkles, Images } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 
 const nav = [
   { href: "/czlonek", label: "Moje prace", icon: Hammer },
+  { href: "/czlonek/rachunek", label: "Rachunek", icon: Receipt },
   { href: "/czlonek/kursy", label: "Kursy", icon: GraduationCap },
   { href: "/czlonek/warsztaty", label: "Warsztaty", icon: CalendarDays },
   { href: "/czlonek/wiki", label: "Wiki", icon: BookOpen },
